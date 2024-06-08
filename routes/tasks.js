@@ -14,36 +14,36 @@ router.get('/', (req, res) => {
 // POST créer une nouvelle tâche
 router.post('/', (req, res) => {
     // Créer la tâche avaec le contenu de la requête
-    const newTodo = {
+    const newTask = {
         _id: tasks.length + 1,
         task: req.body.task,
         completed: false,
     };
     // L'ajouter à la liste des tâches
-    tasks.push(newTodo);
+    tasks.push(newTask);
     // Retourner le code http de création (201)
-    res.status(201).json(newTodo);
+    res.status(201).json(newTask);
 });
 // PUT mise à jour d'une tâche => id en paramètre
 router.put('/:id', (req, res) => {
     // Trouver la tâche cherchée dans la liste
-    const todo = tasks.find(t => t._id === parseInt(req.params.id));
+    const task = tasks.find(t => t._id === parseInt(req.params.id));
     // Si pas trouvé retourner une erreur 404
-    if (!todo) return res.status(404).send('Todo not found');
+    if (!task) return res.status(404).send('Task not found');
     // Modifier la tâche avec les données de la requête
-    todo.task = req.body.task;
-    todo.completed = req.body.completed;
+    task.task = req.body.task;
+    task.completed = req.body.completed;
     // Retourner la tâche modifiée avec le status 226
-    res.status(226).json(todo);
+    res.status(226).json(task);
 });
 // DELETE suppression d'une tâche => id en paramètre
 router.delete('/:id', (req, res) => {
     // Trouver la tâche cherchée dans la liste
-    const todoIndex = tasks.findIndex(t => t._id === parseInt(req.params.id));
+    const taskIndex = tasks.findIndex(t => t._id === parseInt(req.params.id));
     // Si pas trouvé retourner une erreur 404
-    if (todoIndex === -1) return res.status(404).send('Todo not found');
+    if (taskIndex === -1) return res.status(404).send('Task not found');
     // supprimer la tâche (ici du tableau)
-    tasks.splice(todoIndex, 1);
+    tasks.splice(taskIndex, 1);
     // Retourner la confirmation de suppression
     res.status(204).send();
 });
