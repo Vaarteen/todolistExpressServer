@@ -26,8 +26,8 @@ router.post('/login', async (req, res) => {
 });
 // Accéder au profil => route privée
 router.get('/profile', async (req, res) => {
-    const user = await User.findById(req.user.id);
-    res.json({ username: user.username });
+    //const user = await User.findById(req.user.id);
+    res.json({ username: "todo" });
 });
 
 module.exports = router;
