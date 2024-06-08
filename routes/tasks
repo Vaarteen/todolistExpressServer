@@ -1,0 +1,50 @@
+// Récupérer le serveur
+const express = require('express');
+// Créer un routeur pour ce serveur
+const router = express.Router();
+// La liste des tâches "en dur" pour l'instant
+let tasks = [
+    { _id: 1, task: 'Learn React', completed: false },
+    { _id: 2, task: 'Learn Express', completed: false },
+];
+// GET toutes les tâches
+router.get('/', (req, res) => {
+    res.json(tasks);
+});
+// POST créer une nouvelle tâche
+router.post('/', (req, res) => {
+    // Créer la tâche avaec le contenu de la requête
+    const newTodo = {
+        _id: tasks.length + 1,
+        task: req.body.task,
+        completed: false,
+    };
+    // L'ajouter à la liste des tâches
+    tasks.push(newTodo);
+    // Retourner le code http de création (201)
+    res.status(201).json(newTodo);
+});
+// PUT mise à jour d'une tâche => id en paramètre
+router.put('/:id', (req, res) => {
+    // Trouver la tâche cherchée dans la liste
+    const todo = tasks.find(t => t._id === parseInt(req.params.id));
+    // Si pas trouvé retourner une erreur 404
+    if (!todo) return res.status(404).send('Todo not found');
+    // Modifier la tâche avec les données de la requête
+    todo.task = req.body.task;
+    todo.completed = req.body.completed;
+    // Retourner la tâche modifiée avec le status 226
+    res.status(226).json(todo);
+});
+// DELETE suppression d'une tâche => id en paramètre
+router.delete('/:id', (req, res) => {
+    // Trouver la tâche cherchée dans la liste
+    const todoIndex = tasks.findIndex(t => t._id === parseInt(req.params.id));
+    // Si pas trouvé retourner une erreur 404
+    if (todoIndex === -1) return res.status(404).send('Todo not found');
+    // supprimer la tâche (ici du tableau)
+    tasks.splice(todoIndex, 1);
+    // Retourner la confirmation de suppression
+    res.status(204).send();
+});
+module.exports = router;
