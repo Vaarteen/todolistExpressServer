@@ -2,49 +2,39 @@
 const express = require('express');
 // Créer un routeur pour ce serveur
 const router = express.Router();
-// La liste des tâches "en dur" pour l'instant
-let tasks = [
-    { _id: 1, task: 'Learn React', completed: false },
-    { _id: 2, task: 'Learn Express', completed: false },
-];
+// Récupérer le modèle défini pour MongoDB
+const Task = require('../models/Task');
+
 // GET toutes les tâches
-router.get('/', (req, res) => {
-    res.json(tasks);
+router.get('/', async (req, res) => {
+    const tasks = await Task.find();
+    res.status(201).json(tasks);
 });
 // POST créer une nouvelle tâche
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     // Créer la tâche avaec le contenu de la requête
-    const newTask = {
-        _id: tasks.length + 1,
-        task: req.body.task,
-        completed: false,
-    };
-    // L'ajouter à la liste des tâches
-    tasks.push(newTask);
-    // Retourner le code http de création (201)
-    res.status(201).json(newTask);
+    const newTask = new Task({
+        task: req.body.task // completed est false par défaut
+    });
+    const savedTask = await newTask.save();
+    res.status(201).json(savedTask);
 });
 // PUT mise à jour d'une tâche => id en paramètre
-router.put('/:id', (req, res) => {
-    // Trouver la tâche cherchée dans la liste
-    const task = tasks.find(t => t._id === parseInt(req.params.id));
-    // Si pas trouvé retourner une erreur 404
-    if (!task) return res.status(404).send('Task not found');
-    // Modifier la tâche avec les données de la requête
-    task.task = req.body.task;
-    task.completed = req.body.completed;
+router.put('/:id', async (req, res) => {
+    const updatedTask = await Task.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+    );
+    if (!updatedTask) return res.status(404).send('Task not found');
     // Retourner la tâche modifiée avec le status 226
-    res.status(226).json(task);
+    res.status(226).json(updatedTask);
 });
 // DELETE suppression d'une tâche => id en paramètre
-router.delete('/:id', (req, res) => {
-    // Trouver la tâche cherchée dans la liste
-    const taskIndex = tasks.findIndex(t => t._id === parseInt(req.params.id));
-    // Si pas trouvé retourner une erreur 404
-    if (taskIndex === -1) return res.status(404).send('Task not found');
-    // supprimer la tâche (ici du tableau)
-    tasks.splice(taskIndex, 1);
+router.delete('/:id', async (req, res) => {
+    await Task.findByIdAndDelete(req.params.id);
     // Retourner la confirmation de suppression
     res.status(204).send();
 });
+
 module.exports = router;
