@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const authenticateJWT = require('../middlewares/auth');
 const router = express.Router();
 // Créer un utilisateur... s'il n'existe pas déjà !
 router.post('/register', async (req, res) => {
@@ -25,9 +26,9 @@ router.post('/login', async (req, res) => {
     }
 });
 // Accéder au profil => route privée
-router.get('/profile', async (req, res) => {
-    //const user = await User.findById(req.user.id);
-    res.json({ username: "todo" });
+router.get('/profile', authenticateJWT, async (req, res) => {
+    const user = await User.findById(req.user.id);
+    res.json({ username: user.username });
 });
 
 module.exports = router;
