@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const session = require('express-session');
 const app = express();
 const authRouter = require('./routes/auth');
 const tasksRouter = require('./routes/tasks');
@@ -18,6 +19,12 @@ db.once('open', () => {
 // Middleware pour parcourir la charge utile de la requête http
 app.use(express.json());
 app.use(cors());
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Mettre à true en production avec https
+}));
 
 // Routage
 // Les requêtes sur /api/tasks sont routées par tasksRouter
