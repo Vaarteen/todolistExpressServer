@@ -31,11 +31,11 @@ module.exports = (db) => {
     router.put('/:id', (req, res) => {
         const { id } = req.params;
         const { task, completed } = req.body;
-        taskModel.updateTask(id, task, completed, (err) => {
+        taskModel.updateTask(id, task, completed, (err, updatedTask) => {
             if (err) {
                 res.status(500).json({ message: err.message });
             } else {
-                res.sendStatus(226);
+                res.status(226).json(updatedTask);
             }
         });
     });

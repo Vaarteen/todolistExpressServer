@@ -15,7 +15,7 @@ module.exports = (db) => {
                 'UPDATE tasks SET task = ?, completed = ? WHERE id = ?',
                 [task, completed, id],
                 (err) => {
-                    callback(err);
+                    callback(err, { id, task, completed });
                 }
             );
         },
